@@ -10,7 +10,7 @@ A lightweight, zero-dependency canvas snow effect. Low CPU, RAM and GPU use, wit
 
 ## Live demo
 
-**[Explore the interactive snow-effect-js demo](https://kavineksith.github.io/snow-effect-js/demo/)**
+**[Explore the interactive snow-effect-js demo](https://kavineksith.github.io/snow-effect-js/index.html)**
 
 The demo is hosted with GitHub Pages from `index.html`. Try the snow settings, directions, symbols, and visual options directly in your browser.
 
