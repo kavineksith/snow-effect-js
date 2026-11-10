@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>snow-effect-js demo</title>
+  <style>
+    :root { color-scheme: dark; --bg: #0f172a; --fg: #e2e8f0; --panel: rgba(15, 23, 42, .85); }
+    body.light { --bg: #f1f5f9; --fg: #0f172a; --panel: rgba(255, 255, 255, .9); color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; font-family: system-ui, sans-serif; background: var(--bg); color: var(--fg); transition: background .3s; }
+    main { max-width: 640px; margin: 0 auto; padding: 48px 20px 220px; }
+    h1 { margin: 0 0 8px; }
+    p { opacity: .8; line-height: 1.5; }
+    .panel { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 10000; width: min(680px, calc(100% - 24px));
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; padding: 14px;
+      background: var(--panel); border: 1px solid rgba(148, 163, 184, .35); border-radius: 12px; backdrop-filter: blur(6px); }
+    label { display: grid; gap: 4px; font-size: 12px; opacity: .9; }
+    select, input[type=range], button { width: 100%; font: inherit; }
+    select, button { padding: 6px; border-radius: 6px; border: 1px solid rgba(148, 163, 184, .5); background: transparent; color: inherit; }
+    .row { display: flex; align-items: center; gap: 6px; }
+    .row input { width: auto; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>snow-effect-js</h1>
+    <p>Lightweight canvas snow with custom symbols, emoji, shapes and any direction. Use the controls below.</p>
+  </main>
+
+  <div class="panel">
+    <label>Direction
+      <select id="direction">
+        <option value="classic">classic (original)</option>
+        <option value="down">down (top to bottom)</option>
+        <option value="up">up</option>
+        <option value="left">left</option>
+        <option value="right">right</option>
+        <option value="down-left">down-left</option>
+        <option value="down-right">down-right</option>
+        <option value="up-left">up-left</option>
+        <option value="up-right">up-right</option>
+        <option value="60">60 degrees</option>
+      </select>
+    </label>
+    <label>Particles
+      <select id="preset">
+        <option value="dots">dots (default)</option>
+        <option value="stars">stars (shape)</option>
+        <option value="glyphs">❄ ❅ ❆ glyphs</option>
+        <option value="xmas">🎄 🎁 ⭐ emoji</option>
+        <option value="leaves">🍂 🍁 leaves</option>
+        <option value="hearts">❤️ 💖 hearts</option>
+      </select>
+    </label>
+    <label>Count: <span id="countOut">100</span>
+      <input id="count" type="range" min="10" max="400" step="10" value="100">
+    </label>
+    <label>Speed: <span id="speedOut">1</span>
+      <input id="speed" type="range" min="0.2" max="4" step="0.1" value="1">
+    </label>
+    <label>FPS cap
+      <select id="fps">
+        <option value="60">60</option>
+        <option value="30">30</option>
+        <option value="0">uncapped</option>
+      </select>
+    </label>
+    <label>Options
+      <span class="row"><input id="spin" type="checkbox"> <span>rotation</span></span>
+      <button id="theme" type="button">Toggle light / dark</button>
+    </label>
+  </div>
+
+  <script src="./snow-effect.js"></script>
+  <script>
+    var PRESETS = {
+      dots:   { shape: 'circle', symbols: [], color: undefined },
+      stars:  { shape: 'star', symbols: [], color: ['#fde68a', '#ffffff'] },
+      glyphs: { symbols: ['❄', '❅', '❆'], color: undefined },
+      xmas:   { symbols: ['🎄', '🎁', '⭐'] },
+      leaves: { symbols: ['🍂', '🍁'] },
+      hearts: { symbols: ['❤️', '💖'] }
+    };
+
+    var snow = new SnowEffect({ enableSnow: true, isDark: true }).init();
+    var $ = function (id) { return document.getElementById(id); };
+
+    $('direction').onchange = function (e) {
+      var v = e.target.value;
+      snow.setDirection(isNaN(v) ? v : Number(v));
+    };
+    $('preset').onchange = function (e) {
+      var p = PRESETS[e.target.value];
+      // Switching back to plain dots must clear colours set by the "stars" preset
+      snow.setOptions({ shape: p.shape || 'circle', symbols: p.symbols || [], color: p.color || '' });
+    };
+    $('count').oninput = function (e) {
+      $('countOut').textContent = e.target.value;
+      snow.setOptions({ particleCount: Number(e.target.value) });
+    };
+    $('speed').oninput = function (e) {
+      $('speedOut').textContent = e.target.value;
+      snow.setOptions({ speed: Number(e.target.value) });
+    };
+    $('fps').onchange = function (e) { snow.setOptions({ maxFps: Number(e.target.value) }); };
+    $('spin').onchange = function (e) { snow.setOptions({ rotation: e.target.checked }); };
+    $('theme').onclick = function () {
+      var light = document.body.classList.toggle('light');
+      snow.setTheme(!light);
+    };
+  </script>
+</body>
+</html>
